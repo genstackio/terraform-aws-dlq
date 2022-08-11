@@ -18,8 +18,8 @@ module "sns-dlq-topic-policy" {
 }
 
 module "sqs-dlq-policy" {
-  source   = "genstackio/sqs/aws//modules/policy"
-  version  = "0.1.0"
+  source  = "genstackio/sqs/aws//modules/policy"
+  version = "0.1.0"
   policies = {
     dlq = {
       arn     = module.sqs-dlq-queue.arn
@@ -31,16 +31,16 @@ module "sqs-dlq-policy" {
 
 resource "aws_s3_bucket" "dlq" {
   bucket = var.bucket_name
-  tags   = {Env = var.env}
+  tags   = { Env = var.env }
 }
 
 module "lambda-sqs-to-s3" {
-  source      = "genstackio/lambda/aws"
-  version     = "0.1.0"
-  file        = data.archive_file.lambda-sqs-to-s3.output_path
-  name        = "${local.name}-sqs-to-s3"
-  handler     = "index.handler"
-  variables   = {
+  source  = "genstackio/lambda/aws"
+  version = "0.1.0"
+  file    = data.archive_file.lambda-sqs-to-s3.output_path
+  name    = "${local.name}-sqs-to-s3"
+  handler = "index.handler"
+  variables = {
     S3_BUCKET_ID         = aws_s3_bucket.dlq.id
     S3_BUCKET_KEY_PREFIX = var.bucket_key_prefix
   }
@@ -62,8 +62,8 @@ module "lambda-event-source-mapping" {
 }
 
 module "dlq-sns-to-dlq-sqs" {
-  source        = "genstackio/sns/aws//modules/sqs-subscriptions"
-  version       = "0.1.0"
+  source  = "genstackio/sns/aws//modules/sqs-subscriptions"
+  version = "0.1.0"
   subscriptions = {
     local = {
       topic = module.sns-dlq-topic.arn
